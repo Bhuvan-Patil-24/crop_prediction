@@ -1,0 +1,156 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ================= HEADER ================= */
+.header {
+    background-color: #1b5e20;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* ================= MAP ================= */
+#map {
+    height: 55vh;
+    width: 100%;
+}
+
+/* ================= INFO + NDVI ROW ================= */
+#info-row {
+    display: flex;
+    align-items: stretch;          /* 🔥 equal height */
+    gap: 10px;                     /* 🔥 reduce gap */
+    padding: 10px;
+    background: #f4f9f4;
+    border-top: 2px solid #ccc;
+}
+
+/* ================= LEFT PANEL ================= */
+#info-panel {
+    width: 12%;                    /* 🔥 fixed compact width */
+    min-width: 260px;
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;        /* 🔥 vertical stacking */
+    gap: 10px;
+}
+
+/* Location info */
+.location-info h3 {
+    margin: 6px 0;
+    color: #1b5e20;
+}
+
+.location-info p {
+    margin: 3px 0;
+}
+
+/* ================= NDVI CHART BOX ================= */
+.chart-box {
+    flex: 1;                       /* 🔥 take remaining space */
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-box h3 {
+    margin-top: 0;
+}
+
+/* Chart size fix */
+.chart-box canvas {
+    width: 100% !important;
+    height: 350px !important;      /* 🔥 slightly smaller */
+}
+
+/* ================= LEAFLET POPUP ================= */
+.leaflet-popup-content {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ================= LEGEND ================= */
+.legend {
+    background: white;
+    padding: 8px;
+    font-size: 13px;
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+.legend div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.legend span {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    border: 1px solid #555;
+}
+.khasra-label span {
+    font-weight: bold;
+    background: rgba(255,255,255,0.75);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #555;
+    white-space: nowrap;
+}
+
+.label-toggle {
+    background: white;
+    padding: 6px 10px;
+    border: 1px solid #555;
+    cursor: pointer;
+    border-radius: 4px;
+}
+/* ================= KHASRA SEARCH ================= */
+
+.khasra-search {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 8px;
+}
+
+.khasra-search input {
+    width: 100%;
+    padding: 6px;
+    font-size: 14px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.khasra-search input:focus {
+    outline: none;
+    border-color: #1b5e20;
+}
+
+.khasra-search button {
+    width: 100%;
+    margin-top: 6px;
+    padding: 6px;
+    background: #1b5e20;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.khasra-search button:hover {
+    background: #154a17;
+}

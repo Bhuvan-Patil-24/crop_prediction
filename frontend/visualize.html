@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Raster & NDVI Viewer</title>
+
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/frontend/visualize.css">
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<div class="header">
+    🛰️ RGB & NDVI Visualization
+</div>
+
+<!-- ================= TOOLBAR ================= -->
+<div class="toolbar">
+    <div class="toolbar-left">
+        <label><b>Month:</b></label>
+        <select id="monthSelect">
+            <option value="Nov" selected>November</option>
+            <option value="Dec">December</option>
+            <option value="Jan">January</option>
+            <option value="Feb">February</option>
+        </select>
+    </div>
+
+    <!-- 🔥 Dynamic date -->
+    <div id="dateLabel" class="toolbar-date">
+        📅 14 Nov
+    </div>
+
+    <button class="back-btn" onclick="window.location.href='/'">
+        ⬅ Back to Main Page
+    </button>
+</div>
+
+<!-- ================= MAP CONTAINER ================= -->
+<div class="map-row">
+    <div id="rgbMap"></div>
+
+    <div class="ndvi-wrapper">
+        <div id="ndviMap"></div>
+
+        <!-- NDVI LEGEND -->
+        <div class="ndvi-legend">
+            <b>NDVI Classes</b>
+            <div><span class="lg crop"></span> Crop</div>
+            <div><span class="lg nocrop"></span> No Crop</div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= SCRIPTS ================= -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/frontend/visualize.js"></script>
+
+</body>
+</html>

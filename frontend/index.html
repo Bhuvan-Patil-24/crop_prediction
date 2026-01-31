@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Rabi Crop Prediction (NDVI + ML)</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/frontend/style.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        🌾 Rabi Crop Prediction using NDVI Time-Series & ML
+    </div>
+
+    <!-- MAP -->
+    <div id="map"></div>
+
+    <!-- INFO + NDVI ROW -->
+    <div id="info-row">
+
+        <!-- LEFT INFO PANEL -->
+        <div id="info-panel">
+
+            <!-- NAV BUTTON -->
+            <div style="text-align:center; margin: 0px;">
+                <a href="/frontend/visualize.html">
+                    <button style="
+                        padding: 8px 10px;
+                        font-size: 12px;
+                        background-color: #25a02d;
+                        color: white;
+                        border: none;
+                        border-radius: 4px;
+                        cursor: pointer;
+                    ">
+                        🛰️ NDVI & RGB Visualization
+                    </button>
+                </a>
+
+                <!-- 🔍 KHASRA SEARCH -->
+                <div class="location-info khasra-search">
+                    <h3>🔍 खसरा खोज</h3>
+                    <input type="text" id="khasraSearchInput" placeholder="खसरा नंबर दर्ज करें" />
+                    <button id="khasraSearchBtn">खोजें</button>
+                </div>
+            </div>
+
+            <!-- STATIC LOCATION INFO -->
+            <div class="location-info">
+                <h3>📍 स्थान विवरण</h3>
+                <p><b>Village:</b> बांदरसिंदरी</p>
+                <p><b>Patwar:</b> बांदरसिंदरी</p>
+                <p><b>ILR:</b> बांदरसिंदरी</p>
+                <p><b>Tehsil:</b> किशनगढ</p>
+                <p><b>District:</b> अजमेर</p>
+            </div>
+
+            <!-- 🔹 CROP INFO (DYNAMIC) -->
+            <div class="location-info">
+                <h3>🌾 फसल विवरण</h3>
+                <p><b>Predicted Crop on Pixel:</b> <span id="predictedCrop">--</span></p>
+                <p><b>Actual Crop in Khasra:</b> <span id="actualCrop">--</span></p>
+                <p><b>Crop Name:</b> <span id="cropName">--</span></p>
+            </div>
+        </div>
+        <!-- RIGHT NDVI TREND PANEL -->
+        <div class="chart-box">
+            <h3>📈 NDVI Trend</h3>
+            <canvas id="ndviChart"></canvas>
+        </div>
+
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom JS -->
+    <script src="/frontend/script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,14 @@
+venv/
+src/
+*.pyc
+__pycache__/
+outputs/
+dataMaker/
+ndvi_crop_segmentation.py
+segment.py
+GDAL-3.9.2-cp39-cp39-win_amd64.whl
+data/shapefiles/kharif
+data/shapefiles/original
+data/output
+data/
+rabi-ndvi-gis/

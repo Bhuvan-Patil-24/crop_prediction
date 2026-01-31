@@ -37,13 +37,13 @@ async function loadImages(month) {
             `📅 ${monthDates[month]}`;
 
         // 🔹 Fetch geographic bounds ONCE (shared by RGB + NDVI)
-        const boundsRes = await fetch("https://127.0.0.1:8000/ndvi-bounds");
+        const boundsRes = await fetch("http://127.0.0.1:8000/ndvi-bounds");
         const boundsData = await boundsRes.json();
         const bounds = boundsData.bounds;
 
         // ---------------- RGB (IMAGE ONLY, NO GIS) ----------------
         const rgbRes = await fetch(
-            `https://127.0.0.1:8000/viz/rgb-image?month=${month}`
+            `http://127.0.0.1:8000/viz/rgb-image?month=${month}`
         );
         const rgbBlob = await rgbRes.blob();
         const rgbImg = new Image();
@@ -62,7 +62,7 @@ async function loadImages(month) {
         if (ndviLayer) ndviMap.removeLayer(ndviLayer);
 
         ndviLayer = L.imageOverlay(
-            `https://127.0.0.1:8000/viz/ndvi-image?month=${month}`,
+            `http://127.0.0.1:8000/viz/ndvi-image?month=${month}`,
             bounds,
             { opacity: 0.8 }
         ).addTo(ndviMap);
@@ -72,7 +72,7 @@ async function loadImages(month) {
 
         // ---------------- CADASTRAL (LOAD ONCE) ----------------
         if (!cadastralLayer) {
-            const res = await fetch("https://127.0.0.1:8000/khasra-geojson");
+            const res = await fetch("http://127.0.0.1:8000/khasra-geojson");
             const geojson = await res.json();
 
             cadastralLayer = L.geoJSON(geojson, {
@@ -116,7 +116,7 @@ ndviMap.on("click", async e => {
     };
 
     try {
-        const res = await fetch("https://127.0.0.1:8000/viz/ndvi-value", {
+        const res = await fetch("http://127.0.0.1:8000/viz/ndvi-value", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)

@@ -16,13 +16,13 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 let ndviOverlay = null;
 
-fetch("https://127.0.0.1:8000/ndvi-bounds")
+fetch("http://127.0.0.1:8000/ndvi-bounds")
     .then(res => res.json())
     .then(data => {
         const bounds = data.bounds;
 
         ndviOverlay = L.imageOverlay(
-            "https://127.0.0.1:8000/ndvi-image",
+            "http://127.0.0.1:8000/ndvi-image",
             bounds,
             { opacity: 1.0 }
         ).addTo(map);
@@ -127,7 +127,7 @@ function getLabelFontSize(zoom) {
 }
 
 
-fetch("https://127.0.0.1:8000/khasra-geojson")
+fetch("http://127.0.0.1:8000/khasra-geojson")
     .then(res => res.json())
     .then(geojson => {
 
@@ -223,7 +223,7 @@ map.on("click", async function (e) {
         .openOn(map);
 
     try {
-        const response = await fetch("https://127.0.0.1:8000/predict", {
+        const response = await fetch("http://127.0.0.1:8000/predict", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ latitude: lat, longitude: lon })
@@ -291,7 +291,7 @@ document.getElementById("khasraSearchBtn").addEventListener("click", async () =>
     }
 
     try {
-        const response = await fetch("https://127.0.0.1:8000/predict-by-khasra", {
+        const response = await fetch("http://127.0.0.1:8000/predict-by-khasra", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ khasra_no: khasraNo })

@@ -168,5 +168,7 @@ For government or commercial deployment, ensure proper data licensing.
 ---
 
 ### 👤 Author
-Bhuvan Patil
+
+**Bhuvan Patil**
+
 GIS • Remote Sensing • Machine Learning • Web Mapping

@@ -78,9 +78,11 @@ This project is designed for **research, academic, and government-grade use case
 rabi-ndvi-gis/
 │
 ├── backend/
+│ ├── models/
 │ ├── app.py # FastAPI app
+│ ├── model_utils.py
 │ ├── raster_utils.py # NDVI handling
-│ └── vector_utils.py # Khasra logic
+│ └── ndvi_utils.py # Khasra logic
 │
 ├── frontend/
 │ ├── index.html
@@ -94,9 +96,8 @@ rabi-ndvi-gis/
 │ ├── images/
 │ │ └── NDVI_STACK.tif
 │ └── shapefiles/
-│ └── rabi_updated.shp
+│   └── rabi_updated.shp
 │
-├── outputs/ # Generated images (ignored in Docker)
 ├── requirements.txt
 ├── Dockerfile
 ├── .dockerignore
@@ -128,21 +129,6 @@ uvicorn backend.app:app --host 0.0.0.0 --port 8000
 ### Open in browser:
 ```bash
 http://127.0.0.1:8000
-```
-
-### 🌐 API Endpoints
-```bash
-Endpoint	Description
-/	Serves frontend
-/health	Health check
-/predict	Crop prediction at clicked point
-/khasra-geojson	Cadastral polygons
-/ndvi-image	NDVI PNG
-/ndvi-bounds	NDVI geographic bounds
-/viz/ndvi-image	Month-wise NDVI
-/viz/rgb-image	Month-wise RGB
-/viz/ndvi-value	Pixel NDVI value
-/health endpoint used for monitoring
 ```
 
 ---

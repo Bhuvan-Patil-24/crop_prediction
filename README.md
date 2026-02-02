@@ -74,6 +74,7 @@ This project is designed for **research, academic, and government-grade use case
 
 ## 📁 Project Structure
 
+```bash
 rabi-ndvi-gis/
 │
 ├── backend/
@@ -100,7 +101,7 @@ rabi-ndvi-gis/
 ├── Dockerfile
 ├── .dockerignore
 └── README.md
-
+```
 
 ---
 
@@ -112,18 +113,25 @@ rabi-ndvi-gis/
 python -m venv venv
 source venv/bin/activate   # Linux / Mac
 venv\Scripts\activate # Windows
+```
 
-2️⃣ Install dependencies
+### 2️⃣ Install dependencies
+```bash
 pip install -r requirements.txt
+```
 
-▶️ Run Locally
+### ▶️ Run Locally
+```bash
 uvicorn backend.app:app --host 0.0.0.0 --port 8000
+```
 
-Open in browser:
-
+### Open in browser:
+```bash
 http://127.0.0.1:8000
+```
 
-🌐 API Endpoints
+### 🌐 API Endpoints
+```bash
 Endpoint	Description
 /	Serves frontend
 /health	Health check
@@ -135,28 +143,30 @@ Endpoint	Description
 /viz/rgb-image	Month-wise RGB
 /viz/ndvi-value	Pixel NDVI value
 /health endpoint used for monitoring
+```
 
-🧠 Crop Classes
+---
+
+### 🧠 Crop Classes
 
 The system works with 5 standardized Rabi crop classes:
 
-कोई फ़सल नहीं (No Crop)
-
-चना (Gram)
-
-गेहूँ (Wheat)
-
-सरसों (Mustard)
-
-अन्य फसल (Other Crop)
+- कोई फ़सल नहीं (No Crop)
+- चना (Gram)
+- गेहूँ (Wheat)
+- सरसों (Mustard)
+- अन्य फसल (Other Crop)
 
 Actual crop names from the shapefile are mapped internally to these classes.
 
+---
 
-📜 License
+### 📜 License
 This project is intended for educational, research, and demonstration purposes.
 For government or commercial deployment, ensure proper data licensing.
 
-👤 Author
+---
+
+### 👤 Author
 Bhuvan Patil
 GIS • Remote Sensing • Machine Learning • Web Mapping

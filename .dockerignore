@@ -1,0 +1,48 @@
+# ----------------------------
+# Python / virtual env
+# ----------------------------
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# ----------------------------
+# Git
+# ----------------------------
+.git/
+.gitignore
+
+# ----------------------------
+# Local scripts (not needed in container)
+# ----------------------------
+ndvi_crop_segmentation.py
+segment.py
+dataMaker/
+
+
+# ----------------------------
+# Outputs / temp files
+# ----------------------------
+outputs/
+*.png
+*.log
+
+# ----------------------------
+# OS / editor junk
+# ----------------------------
+.DS_Store
+Thumbs.db
+.vscode/
+
+# ----------------------------
+# Windows-only wheels
+# ----------------------------
+*.whl
+GDAL-*.whl
+
+
+# ----------------------------
+# Docs
+# ----------------------------
+README.txt
+data/

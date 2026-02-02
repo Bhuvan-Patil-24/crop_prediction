@@ -1,23 +1,12 @@
 FROM python:3.9-slim
 
 # ----------------------------
-# System dependencies (GDAL stack)
+# System dependencies (minimal)
 # ----------------------------
 RUN apt-get update && apt-get install -y \
-    gdal-bin \
-    libgdal-dev \
-    proj-bin \
-    proj-data \
     gcc \
     g++ \
     && rm -rf /var/lib/apt/lists/*
-
-# ----------------------------
-# Environment variables for GDAL
-# ----------------------------
-ENV GDAL_CONFIG=/usr/bin/gdal-config
-ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
-ENV C_INCLUDE_PATH=/usr/include/gdal
 
 # ----------------------------
 # Working directory

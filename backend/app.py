@@ -52,6 +52,7 @@ app.add_middleware(
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 STATIC_DIR = os.path.join(BASE_DIR, "frontend")
 
+
 app.mount("/frontend", StaticFiles(directory=STATIC_DIR), name="frontend")
 
 # ---------------------------------------------------------
@@ -117,10 +118,9 @@ def get_ndvi_bounds():
     _, bounds = generate_ndvi_png()
     return {"bounds": bounds}
 
-
 @app.get("/rgb-image")
 def get_rgb_image():
-    buf, _ = generate_rgb_png()
+    buf = generate_rgb_png()
     return Response(buf.read(), media_type="image/png")
 
 def find_khasra_from_point(latitude: float, longitude: float):
@@ -200,7 +200,6 @@ def normalize_rabi_crop(raw):
             return value
 
     return "अन्‍य फसल"
-
 
 # -----------------------------------------
 # PREDICT ENDPOINT

@@ -6,7 +6,10 @@
     <title>Rabi Crop Prediction (NDVI + ML)</title>
 
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/frontend/style.css">
@@ -47,7 +50,11 @@
                 <!-- 🔍 KHASRA SEARCH -->
                 <div class="location-info khasra-search">
                     <h3>🔍 खसरा खोज</h3>
-                    <input type="text" id="khasraSearchInput" placeholder="खसरा नंबर दर्ज करें" />
+                    <input
+                        type="text"
+                        id="khasraSearchInput"
+                        placeholder="खसरा नंबर दर्ज करें"
+                    />
                     <button id="khasraSearchBtn">खोजें</button>
                 </div>
             </div>
@@ -65,11 +72,37 @@
             <!-- 🔹 CROP INFO (DYNAMIC) -->
             <div class="location-info">
                 <h3>🌾 फसल विवरण</h3>
-                <p><b>Predicted Crop on Pixel:</b> <span id="predictedCrop">--</span></p>
-                <p><b>Actual Crop in Khasra:</b> <span id="actualCrop">--</span></p>
-                <p><b>Crop Name:</b> <span id="cropName">--</span></p>
+                <p>
+                    <b>Predicted Crop on Pixel:</b>
+                    <span id="predictedCrop">--</span>
+                </p>
+                <p>
+                    <b>Actual Crop in Khasra:</b>
+                    <span id="actualCrop">--</span>
+                </p>
+                <p>
+                    <b>Crop Name:</b>
+                    <span id="cropName">--</span>
+                </p>
             </div>
+
+            <!-- 🔹 OVERLAY CONTROLS (NEW) -->
+            <div class="location-info">
+                <h3>🗺️ Map Layers</h3>
+
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                    <input
+                        type="checkbox"
+                        id="togglePredictedCrop"
+                        checked
+                    />
+                    🌾 Predicted Crop Segmentation
+                </label>
+                
+            </div>
+
         </div>
+
         <!-- RIGHT NDVI TREND PANEL -->
         <div class="chart-box">
             <h3>📈 NDVI Trend</h3>
@@ -79,14 +112,17 @@
     </div>
 
     <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
 
     <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
 
     <!-- Custom JS -->
     <script src="/frontend/script.js"></script>
 
 </body>
-
 </html>

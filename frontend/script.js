@@ -43,7 +43,7 @@ fetch("http://127.0.0.1:8000/ndvi-bounds")
             "http://127.0.0.1:8000/rgb-image",
             ndviBounds,          // 🔥 SAME NDVI BOUNDS
             { opacity: 1.0 }
-        ).addTo(map);
+        )
 
         // -----------------------------
         // LAYER ORDER
@@ -245,7 +245,7 @@ function getOverlayLegendHTML() {
 legend.onAdd = function () {
     const div = L.DomUtil.create("div", "legend");
     div.id = "legend-content";
-    div.innerHTML = getOverlayLegendHTML();
+    div.innerHTML = getDefaultLegendHTML();
     return div;
 };
 

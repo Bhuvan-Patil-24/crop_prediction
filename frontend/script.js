@@ -14,22 +14,49 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 // NDVI STACK OVERLAY
 // -----------------------------------------------------
 
+// -----------------------------------------------------
+// NDVI + SEGMENTATION OVERLAYS (SINGLE SOURCE OF BOUNDS)
+// -----------------------------------------------------
+
 let ndviOverlay = null;
+let rgbOverlay = null;
+let ndviBounds = null;
 
 fetch("http://127.0.0.1:8000/ndvi-bounds")
     .then(res => res.json())
     .then(data => {
-        const bounds = data.bounds;
+        ndviBounds = data.bounds;
 
+        // -----------------------------
+        // NDVI STACK OVERLAY (BOTTOM)
+        // -----------------------------
         ndviOverlay = L.imageOverlay(
             "http://127.0.0.1:8000/ndvi-image",
-            bounds,
+            ndviBounds,
             { opacity: 1.0 }
         ).addTo(map);
 
-        map.fitBounds(bounds);
-    });
+        // -----------------------------
+        // SEGMENTATION PNG OVERLAY
+        // -----------------------------
+        rgbOverlay = L.imageOverlay(
+            "http://127.0.0.1:8000/rgb-image",
+            ndviBounds,          // 🔥 SAME NDVI BOUNDS
+            { opacity: 1.0 }
+        ).addTo(map);
 
+        // -----------------------------
+        // LAYER ORDER
+        // -----------------------------
+        ndviOverlay.bringToBack();   // NDVI at bottom
+        rgbOverlay.bringToFront();   // segmentation above NDVI
+
+        // Zoom map once
+        map.fitBounds(ndviBounds);
+    })
+    .catch(err => {
+        console.error("Failed to load NDVI / RGB overlays:", err);
+    });
 
 // -----------------------------------------------------
 // NDVI TREND CHART
@@ -85,26 +112,6 @@ const cropColors = {
     "अन्‍य फसल": "#984ea3"
 };
 
-// -----------------------------------------------------
-// LEGEND
-// -----------------------------------------------------
-
-const legend = L.control({ position: "bottomright" });
-
-legend.onAdd = function () {
-    const div = L.DomUtil.create("div", "legend");
-    div.innerHTML = "<b>Crop Classes</b>";
-    for (let crop in cropColors) {
-        div.innerHTML += `
-            <div>
-                <span class="lg" style="background:${cropColors[crop]}"></span>
-                ${crop}
-            </div>
-        `;
-    }
-    return div;
-};
-legend.addTo(map);
 
 // -----------------------------------------------------
 // KHASRA CADASTRAL + LABEL LAYERS
@@ -138,6 +145,8 @@ fetch("http://127.0.0.1:8000/khasra-geojson")
                 fill: false
             }
         }).addTo(map);
+        // 🔥 Keep cadastral always on top
+        cadastralLayer.bringToFront();
 
         // ---- CREATE LABELS (NOT SHOWN YET) ----
         geojson.features.forEach(f => {
@@ -208,6 +217,40 @@ labelToggle.onAdd = function () {
 
 labelToggle.addTo(map);
 
+const legend = L.control({ position: "bottomright" });
+
+function getDefaultLegendHTML() {
+    return `
+        <b>Crop Search Classes</b>
+        <div><span class="lg" style="background:#bdbdbd"></span> कोई फ़सल नहीं</div>
+        <div><span class="lg" style="background:#4daf4a"></span> चना</div>
+        <div><span class="lg" style="background:#ffd92f"></span> गेहूँ</div>
+        <div><span class="lg" style="background:#e41a1c"></span> सरसों</div>
+        <div><span class="lg" style="background:#984ea3"></span> अन्य फसल</div>
+    `;
+}
+
+function getOverlayLegendHTML() {
+    return `
+        <b>Crop Segmentation Classes</b>
+        <div><span class="lg" style="background:#bdbdbd"></span> कोई फ़सल नहीं</div>
+        <div><span class="lg" style="background:#1f78b4"></span> चना</div>
+        <div><span class="lg" style="background:#ffd92f"></span> सरसों</div>
+        <div><span class="lg" style="background:#33a02c"></span> तारामीरा</div>
+        <div><span class="lg" style="background:#e31a1c"></span> गेहूँ</div>
+    `;
+}
+
+
+legend.onAdd = function () {
+    const div = L.DomUtil.create("div", "legend");
+    div.id = "legend-content";
+    div.innerHTML = getOverlayLegendHTML();
+    return div;
+};
+
+legend.addTo(map);
+
 // -----------------------------------------------------
 // CLICK → PREDICTION → COLOR SELECTED KHASRA
 // -----------------------------------------------------
@@ -236,20 +279,10 @@ map.on("click", async function (e) {
             return;
         }
 
-        // const color = cropColors[data.predicted_crop] || "#000";
-
         if (selectedKhasraLayer) {
             map.removeLayer(selectedKhasraLayer);
         }
 
-        // selectedKhasraLayer = L.geoJSON(data.geometry, {
-        //     style: {
-        //         color: color,
-        //         fillColor: color,
-        //         fillOpacity: 1,
-        //         weight: 3
-        //     }
-        // }).addTo(map);
         
         // 🔹 Update left panel crop info
         document.getElementById("predictedCrop").innerText =
@@ -350,3 +383,37 @@ document.getElementById("khasraSearchBtn").addEventListener("click", async () =>
         console.error(err);
     }
 });
+// -----------------------------------------------------
+// TOGGLE PREDICTED CROP OVERLAY
+// -----------------------------------------------------
+
+
+document
+    .getElementById("togglePredictedCrop")
+    .addEventListener("change", function () {
+
+        const legendDiv = document.getElementById("legend-content");
+
+        if (!legendDiv) return;
+
+        if (this.checked) {
+
+            // ✅ Show overlay
+            if (rgbOverlay && !map.hasLayer(rgbOverlay)) {
+                map.addLayer(rgbOverlay);
+            }
+
+            // 🔁 Switch legend
+            legendDiv.innerHTML = getOverlayLegendHTML();
+
+        } else {
+
+            // ❌ Hide overlay
+            if (rgbOverlay && map.hasLayer(rgbOverlay)) {
+                map.removeLayer(rgbOverlay);
+            }
+
+            // 🔁 Restore default legend
+            legendDiv.innerHTML = getDefaultLegendHTML();
+        }
+    });

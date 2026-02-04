@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-
+from huggingface_hub import snapshot_download
+import logging
 import geopandas as gpd
 from shapely.geometry import Point, shape
 import json
@@ -59,18 +60,31 @@ app.mount("/frontend", StaticFiles(directory=STATIC_DIR), name="frontend")
 # LOAD SHAPEFILE (ONCE)
 # ---------------------------------------------------------
 
-SHP_PATH = os.path.join(
-    BASE_DIR,
-    "data",
-    "shapefiles",
-    "rabi",
-    "rabi_updated.shp"
-)
+khasra_gdf = None
 
-khasra_gdf = gpd.read_file(SHP_PATH)
+try:
+    DATA_DIR = snapshot_download(
+        repo_id="bhuvanpatil24/data",
+        repo_type="dataset",
+        token=os.getenv("HF_TOKEN"),
+        local_dir="/app/data_cache",
+        local_dir_use_symlinks=False
+    )
 
-if khasra_gdf.crs is None or khasra_gdf.crs.to_string() != "EPSG:4326":
-    khasra_gdf = khasra_gdf.to_crs(epsg=4326)
+    SHP_PATH = os.path.join(
+        DATA_DIR,
+        "rabi",
+        "rabi_updated.shp"
+    )
+
+    if os.path.exists(SHP_PATH):
+        khasra_gdf = gpd.read_file(SHP_PATH)
+        logging.info("Khasra shapefile loaded from HF Dataset")
+    else:
+        logging.warning(f"Shapefile not found at {SHP_PATH}")
+
+except Exception as e:
+    logging.warning(f"Failed to load HF Dataset: {e}")
 
 # ---------------------------------------------------------
 # REQUEST SCHEMAS

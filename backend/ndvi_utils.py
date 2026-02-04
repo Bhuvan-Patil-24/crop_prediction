@@ -8,8 +8,9 @@ import matplotlib.pyplot as plt
 from io import BytesIO
 
 # =========================================================
-# PATH
+# PATHS
 # =========================================================
+
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 NDVI_STACK_PATH = os.path.join(
@@ -19,91 +20,92 @@ NDVI_STACK_PATH = os.path.join(
     "NDVI_STACK.tif"
 )
 
+SEGMENTATION_TIF_PATH = os.path.join(
+    BASE_DIR,
+    "data",
+    "output",
+    "segmentation_5classes3.tif"
+)
+
 # =========================================================
-# 1️⃣ NDVI STACK SAMPLING (FOR ML PREDICTION)
+# 1️⃣ NDVI STACK SAMPLING (FOR ML)
 # =========================================================
 
 def extract_ndvi_stack(latitude: float, longitude: float):
     """
-    Extract 4-month NDVI values from stacked NDVI raster.
-    Returns dict OR None if point is outside raster.
+    Extract 4-band NDVI values at lat/lon.
+    Returns None if outside raster.
     """
 
     with rasterio.open(NDVI_STACK_PATH) as src:
 
-        # ---- CRS transform (lat/lon → raster CRS) ----
         transformer = Transformer.from_crs(
-            "EPSG:4326",
-            src.crs,
-            always_xy=True
+            "EPSG:4326", src.crs, always_xy=True
         )
+
         x, y = transformer.transform(longitude, latitude)
 
-        # ---- Bounds check ----
         if not (
-            src.bounds.left <= x <= src.bounds.right
-            and src.bounds.bottom <= y <= src.bounds.top
+            src.bounds.left <= x <= src.bounds.right and
+            src.bounds.bottom <= y <= src.bounds.top
         ):
-            return None   # outside raster
+            return None
 
-        # ---- Ensure 4-band stack ----
         if src.count < 4:
-            raise ValueError("NDVI_STACK.tif must contain at least 4 bands")
+            raise ValueError("NDVI stack must have 4 bands")
 
-        # ---- Sample NDVI values (all 4 bands at once) ----
-        sampled = next(
-            src.sample([(x, y)], indexes=[1, 2, 3, 4])
-        )
+        values = next(src.sample([(x, y)], indexes=[1, 2, 3, 4]))
 
-        ndvi_values = []
-        for v in sampled:
+        out = []
+        for v in values:
             if v is None or np.isnan(v) or v == src.nodata:
-                ndvi_values.append(0.0)
+                out.append(0.0)
             else:
-                ndvi_values.append(float(v))
+                out.append(float(v))
 
         return {
-            "NDVI_Nov": ndvi_values[0],
-            "NDVI_Dec": ndvi_values[1],
-            "NDVI_Jan": ndvi_values[2],
-            "NDVI_Feb": ndvi_values[3]
+            "NDVI_Nov": out[0],
+            "NDVI_Dec": out[1],
+            "NDVI_Jan": out[2],
+            "NDVI_Feb": out[3],
         }
 
 # =========================================================
-# 2️⃣ NDVI → PNG CONVERSION (FOR FRONTEND DISPLAY)
+# 2️⃣ NDVI STACK → PNG (REFERENCE LOGIC)
 # =========================================================
 
 def generate_ndvi_png():
     """
-    Convert NDVI RGB raster to transparent PNG (in-memory).
-    Outside raster area becomes transparent.
+    NDVI stack → RGBA PNG
+    Uses original colors
+    Removes background via mask
     """
 
     with rasterio.open(NDVI_STACK_PATH) as src:
 
-        # ---- READ RGB ----
+        # ---- READ RGB (AS-IS) ----
         rgb = src.read([1, 2, 3]).astype("float32")
 
-        # ---- READ MASK (valid data mask) ----
-        mask = src.read_masks(1)  # 0 = nodata, 255 = valid
+        # ---- READ VALID DATA MASK ----
+        mask = src.read_masks(1)
 
-        # ---- NORMALIZE RGB (prevent black image) ----
-        min_val = rgb.min()
-        max_val = rgb.max()
+        # ---- NORMALIZE (SAFE) ----
+        min_val = np.nanmin(rgb)
+        max_val = np.nanmax(rgb)
         if max_val > min_val:
             rgb = (rgb - min_val) / (max_val - min_val)
+
         rgb = (rgb * 255).astype("uint8")
 
-        # ---- TRANSPOSE TO H,W,C ----
+        # ---- TRANSPOSE ----
         rgb = np.transpose(rgb, (1, 2, 0))
 
-        # ---- CREATE ALPHA CHANNEL ----
+        # ---- ALPHA CHANNEL ----
         alpha = np.where(mask > 0, 255, 0).astype("uint8")
 
-        # ---- STACK RGBA ----
-        rgba = np.dstack((rgb, alpha))
+        rgba = np.dstack([rgb, alpha])
 
-        # ---- GET BOUNDS ----
+        # ---- BOUNDS ----
         bounds = src.bounds
         transformer = Transformer.from_crs(
             src.crs, "EPSG:4326", always_xy=True
@@ -117,22 +119,16 @@ def generate_ndvi_png():
             [max_lat, max_lon]
         ]
 
-    # ---- PLOT RGBA (SHARP / NO SMOOTHING) ----
+    # ---- PLOT (NO BLUR) ----
     fig, ax = plt.subplots(figsize=(6, 6))
-
-    ax.imshow(
-        rgba,
-        interpolation="nearest",   # 🔥 KEY FIX (NO BLUR)
-        resample=False             # 🔥 disable resampling
-    )
-
+    ax.imshow(rgba, interpolation="nearest", resample=False)
     ax.axis("off")
 
     buf = BytesIO()
     plt.savefig(
         buf,
         format="png",
-        dpi=300,                   # 🔥 higher DPI = sharper
+        dpi=300,
         bbox_inches="tight",
         pad_inches=0,
         transparent=True
@@ -142,45 +138,51 @@ def generate_ndvi_png():
 
     return buf, leaflet_bounds
 
+# =========================================================
+# 3️⃣ SEGMENTATION TIFF → PNG (USING SAME LOGIC)
+# =========================================================
 
 def generate_rgb_png():
-    """
-    Convert original multispectral TIF to RGB PNG (in-memory)
-    """
-    RGB_TIF_PATH = os.path.join(
-    BASE_DIR,
-    "data",
-    "Rabbi",
-    "23_Feb2025_psscene_analytic_sr_udm2",
-    "PSScene",
-    "20250223_055317_82_251c_3b_analyticms_sr_mosaic.tif"
-    )
 
-    with rasterio.open(RGB_TIF_PATH) as src:
-        # Adjust band numbers if needed (PlanetScope example: 3,2,1)
-        red = src.read(3)
-        green = src.read(2)
-        blue = src.read(1)
+    with rasterio.open(SEGMENTATION_TIF_PATH) as src:
 
-        bounds = src.bounds
+        # ---- READ RGB (AS-IS) ----
+        rgb = src.read([1, 2, 3]).astype("float32")
 
-        rgb = np.dstack([red, green, blue]).astype("float32")
-        rgb /= np.percentile(rgb, 98)  # contrast stretch
-        rgb = np.clip(rgb, 0, 1)
+        # ---- READ MASK ----
+        mask = src.read_masks(1)
 
+        # ---- NORMALIZE SAME AS NDVI ----
+        min_val = np.nanmin(rgb)
+        max_val = np.nanmax(rgb)
+        if max_val > min_val:
+            rgb = (rgb - min_val) / (max_val - min_val)
+
+        rgb = (rgb * 255).astype("uint8")
+
+        # ---- TRANSPOSE ----
+        rgb = np.transpose(rgb, (1, 2, 0))
+
+        # ---- ALPHA (REMOVE BLACK BACKGROUND) ----
+        alpha = np.where(mask > 0, 255, 0).astype("uint8")
+
+        rgba = np.dstack([rgb, alpha])
+
+    # ---- PLOT (NO BLUR) ----
     fig, ax = plt.subplots(figsize=(6, 6))
-    ax.imshow(rgb)
+    ax.imshow(rgba, interpolation="nearest", resample=False)
     ax.axis("off")
 
     buf = BytesIO()
-    plt.savefig(buf, format="png", dpi=200, bbox_inches="tight")
+    plt.savefig(
+        buf,
+        format="png",
+        dpi=300,
+        bbox_inches="tight",
+        pad_inches=0,
+        transparent=True
+    )
     plt.close(fig)
     buf.seek(0)
 
-    # Convert bounds to Leaflet format
-    leaflet_bounds = [
-        [bounds.bottom, bounds.left],
-        [bounds.top, bounds.right]
-    ]
-
-    return buf, leaflet_bounds
+    return buf

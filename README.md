@@ -137,11 +137,11 @@ http://127.0.0.1:8000
 
 The system works with 5 standardized Rabi crop classes:
 
-- कोई फ़सल नहीं (No Crop)
-- चना (Gram)
-- गेहूँ (Wheat)
-- सरसों (Mustard)
-- अन्य फसल (Other Crop)
+- कोई फ़सल नहीं
+- चना
+- गेहूँ
+- सरसों
+- अन्य फसल
 
 Actual crop names from the shapefile are mapped internally to these classes.
 
